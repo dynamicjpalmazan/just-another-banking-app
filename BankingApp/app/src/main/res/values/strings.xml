@@ -1,0 +1,29 @@
+<resources>
+    <string name="app_name">Just Another Banking App</string>
+
+    <!-- string values -->
+
+        <!-- user string values -->
+            <string name="withdraw">Withdraw</string>
+            <string name="deposit">Deposit</string>
+            <string name="checkBalance">Check Balance</string>
+            <string name="moneyTransfer">Money Transfer</string>
+            <string name="aboutUs">About Us</string>
+        <!-- end user string values -->
+
+        <!-- admin string values -->
+            <string name="transaction">Transaction</string>
+        <!-- end admin string values -->
+
+        <!-- utility string values -->
+            <string name="navigation_drawer_open">Open navigation drawer</string>
+            <string name="navigation_drawer_close">Close navigation drawer</string>
+            <string name="action_settings">Settings</string>
+        <!-- end utility string values -->
+
+    <!-- end string values -->
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+</resources>

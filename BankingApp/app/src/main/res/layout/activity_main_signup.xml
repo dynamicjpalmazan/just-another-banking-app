@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/splash3">
+
+    <TextView
+        android:id="@+id/Title"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:textColor="@color/kiddo_color"
+        android:textStyle="bold"
+        android:textSize="26sp"
+        android:gravity="center"
+        android:text="CREATE ACCOUNT"
+        android:layout_gravity="right|top"/>
+
+    <ScrollView android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:weightSum="1"
+            android:layout_marginTop="10dp"
+            android:padding="15dp"
+            android:id="@+id/linearSignUp">
+
+            <!-- basic information -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="6dp"
+                android:layout_marginBottom="5dp"
+                android:text="Basic Information:"
+                android:textSize="21sp"
+                android:layout_marginLeft="10dp"/>
+
+            <EditText
+                android:color="#fff"
+                android:paddingLeft="40dp"
+                android:paddingRight="10dp"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:hint="First Name"
+                android:lines="1"
+                android:singleLine="true"
+                android:inputType="textAutoComplete"
+                android:textSize="@dimen/text_detail_title_text_size"
+                android:id="@+id/textSignUpFName"/>
+
+            <EditText
+            android:color="#fff"
+            android:paddingLeft="40dp"
+            android:paddingRight="10dp"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:hint="Last Name"
+            android:lines="1"
+            android:singleLine="true"
+            android:inputType="textAutoComplete"
+            android:textSize="@dimen/text_detail_title_text_size"
+            android:id="@+id/textSignUpLName"/>
+
+            <EditText
+                android:color="#fff"
+                android:paddingLeft="40dp"
+                android:paddingRight="10dp"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:hint="Address"
+                android:lines="1"
+                android:singleLine="true"
+                android:inputType="textAutoComplete"
+                android:textSize="@dimen/text_detail_title_text_size"
+                android:id="@+id/textSignUpAddress"/>
+            <!-- end basic information -->
+
+            <!-- account information -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="25dp"
+                android:layout_marginBottom="5dp"
+                android:text="Account Information:"
+                android:textSize="21sp"
+                android:layout_marginLeft="10dp"/>
+
+            <EditText
+                android:color="#fff"
+                android:paddingLeft="40dp"
+                android:paddingRight="10dp"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:hint="Initial Deposit"
+                android:textSize="@dimen/text_detail_title_text_size"
+                android:lines="1"
+                android:singleLine="true"
+                android:inputType="number"
+                android:id="@+id/textSignUpInitialDeposit"/>
+
+            <EditText
+                android:color="#fff"
+                android:paddingLeft="40dp"
+                android:paddingRight="10dp"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:hint="Pin Code"
+                android:textSize="@dimen/text_detail_title_text_size"
+                android:lines="1"
+                android:singleLine="true"
+                android:maxLength="4"
+                android:inputType="numberPassword"
+                android:id="@+id/textSignUpPassword"/>
+            <!-- end deposit information -->
+
+            <!-- deposit buttons -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="35dp"
+                android:layout_marginBottom="15dp">
+
+                <Button
+                    android:layout_width="150dp"
+                    android:layout_height="40dp"
+                    android:text="PROCEED"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="@dimen/activity_horizontal_margin"
+                    android:background="@drawable/bg_button"
+                    android:textSize="17sp"
+                    android:textColor="@color/white"
+                    android:id="@+id/btnSignUpProceed"
+                    android:onClick="onClickSubmitSignUp"/>
+
+                <Button
+                    android:layout_width="150dp"
+                    android:layout_height="40dp"
+                    android:text="CANCEL"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="@dimen/activity_horizontal_margin"
+                    android:layout_marginLeft="25dp"
+                    android:background="@drawable/bg_button"
+                    android:textSize="17sp"
+                    android:textColor="@color/white"
+                    android:id="@+id/btnSignUpCancel"
+                    android:onClick="onClickCancelSignUp"/>
+
+            </LinearLayout>
+            <!-- deposit buttons -->
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</LinearLayout>

@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/splash3">
+
+    <TextView
+        android:id="@+id/Title"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:textColor="@color/kiddo_color"
+        android:textStyle="bold"
+        android:textSize="26sp"
+        android:gravity="center"
+        android:text="DEPOSIT"
+        android:layout_gravity="right|top"/>
+
+    <ScrollView android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:weightSum="1"
+            android:layout_marginTop="10dp"
+            android:padding="15dp">
+
+            <!-- account information -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="6dp"
+                android:text="Account Information:"
+                android:textSize="21sp"
+                android:layout_marginLeft="10dp"/>
+
+            <TextView
+                android:color="#fff"
+                android:paddingLeft="40dp"
+                android:paddingRight="10dp"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:hint="Account No."
+                android:textSize="@dimen/text_detail_title_text_size"
+                android:id="@+id/textDepositAccountNo"/>
+            <!-- end account information -->
+
+            <!-- deposit information -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="74dp"
+                android:text="Enter the amount to be deposited below:"
+                android:textSize="21sp"
+                android:layout_marginLeft="10dp"/>
+
+            <EditText
+                android:color="#fff"
+                android:paddingLeft="40dp"
+                android:paddingRight="10dp"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:hint="Desired Amount"
+                android:textSize="@dimen/text_detail_title_text_size"
+                android:lines="1"
+                android:singleLine="true"
+                android:inputType="number"
+                android:id="@+id/textDepositAmount"/>
+            <!-- end deposit information -->
+
+            <!-- deposit buttons -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="127dp"
+                android:layout_marginBottom="15dp">
+
+                <Button
+                    android:layout_width="150dp"
+                    android:layout_height="40dp"
+                    android:text="PROCEED"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="@dimen/activity_horizontal_margin"
+                    android:background="@drawable/bg_button"
+                    android:textSize="17sp"
+                    android:textColor="@color/white"
+                    android:id="@+id/btnDepositProceed"/>
+
+                <Button
+                    android:layout_width="150dp"
+                    android:layout_height="40dp"
+                    android:text="CANCEL"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="@dimen/activity_horizontal_margin"
+                    android:layout_marginLeft="25dp"
+                    android:background="@drawable/bg_button"
+                    android:textSize="17sp"
+                    android:textColor="@color/white"
+                    android:id="@+id/btnDepositCancel"/>
+
+            </LinearLayout>
+            <!-- deposit buttons -->
+
+        </LinearLayout>
+    </ScrollView>
+
+
+</LinearLayout>

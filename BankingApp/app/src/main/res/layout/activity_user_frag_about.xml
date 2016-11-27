@@ -1,0 +1,105 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.jom.ismileapp.AboutUs.AboutUs">
+
+    <ScrollView
+        android:fillViewport="true"
+        android:id="@+id/q_area"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:background="@drawable/splash3">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/img"
+                android:layout_gravity="right|top"
+                android:color="#fff"
+                android:layout_width="wrap_content"
+                android:layout_height="100dp"
+                android:layout_marginTop="20dp"
+                android:src="@drawable/logo"/>
+
+            <TextView
+                android:id="@+id/Title"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/kiddo_color"
+                android:textStyle="bold"
+                android:textSize="26sp"
+                android:gravity="center"
+                android:text="JustAnotherBankingApp"
+                android:layout_below="@id/img"/>
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:padding="10dp"
+                android:layout_below="@id/Title"
+                android:layout_marginTop="25dp"
+                android:id="@+id/comprehension"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" >
+
+                <TextView
+                    android:id="@+id/sentence1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/kiddo_color"
+                    android:text="      The way people engage with banking concerns are changing quickly so as the way you access our bank." />
+
+                <TextView
+                    android:id="@+id/sentence2"
+                    android:layout_marginTop="15dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/kiddo_color"
+                    android:text="      Don't worry, our app has the right tools to help you take care of your account.  We will be happy to serve you as much as how you love your banking services." />
+
+                <TextView
+                    android:id="@+id/sentence3"
+                    android:layout_marginTop="15dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/kiddo_color"
+                    android:text="       Just saying an honest statement." />
+
+                <TextView
+                    android:id="@+id/sentence5"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="50dp"
+                    android:textColor="@color/kiddo_color"
+                    android:text="© JustAnotherBankingApp 2016." />
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/explanation_text"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/comprehension"
+                android:layout_marginTop="25dp"
+                android:padding="10dp"
+                android:text="" />
+
+            <View
+                android:visibility="invisible"
+                android:id="@+id/user_optionset4"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/explanation_text"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="50dp"/>
+
+        </RelativeLayout>
+
+    </ScrollView>
+
+</RelativeLayout>

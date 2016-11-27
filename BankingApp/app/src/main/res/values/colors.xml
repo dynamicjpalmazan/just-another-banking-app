@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#02a1b6</color>
+    <color name="colorPrimaryDark">#0f8eab</color>
+    <color name="colorAccent">#259ec6</color>
+    <color name="indicator">#255676</color>
+
+
+
+    <color name="black_overlay">#66000000</color>
+    <color name="pressed_color">#4d90fe</color>
+    <color name="default_color">#ffffff</color>
+    <color name="style_color_primary">#2d5d82</color>
+    <color name="style_color_primary_dark">#21425d</color>
+    <color name="style_color_accent">#01bcd5</color>
+
+    <color name="kiddo_color">#FF14917F</color>
+    <color name="kiddo_navbar">#00838f</color>
+
+
+    <color name="text_color_default">#00000C</color>
+    <color name="text_color_inverse">#FFFFFF</color>
+    <color name="white">#FFFFFF</color>
+    <color name="list_row_default_bg">#d1ecfe</color>
+    <color name="list_row_pressed_bg">#008cef</color>
+    <color name="list_row_selected_bg">#86d3f6</color>
+
+    <color name="color_accent">@color/md_blue_500</color>
+    <color name="md_blue_500">#2196F3</color>
+    <color name="transparent">#00000000</color>
+
+</resources>
