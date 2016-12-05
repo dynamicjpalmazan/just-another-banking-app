@@ -1,4 +1,4 @@
-package com.example.daniel.bankingapp.User;
+package com.example.daniel.bankingapp.Administrator.Transaction;
 
 import android.app.AlertDialog;
 import android.content.ContentValues;
@@ -17,14 +17,11 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.daniel.bankingapp.Database.DatabaseHelper;
-import com.example.daniel.bankingapp.Database.Tables.ActivityLog;
 import com.example.daniel.bankingapp.Database.Tables.BankAccount;
 import com.example.daniel.bankingapp.Main.MainActivity;
-import com.example.daniel.bankingapp.Navigation.UserNavigation;
 import com.example.daniel.bankingapp.R;
 import com.example.daniel.bankingapp.Utility.*;
 import com.example.daniel.bankingapp.Utility.SecurityManager;
@@ -32,19 +29,17 @@ import com.example.daniel.bankingapp.Utility.SecurityManager;
 import java.util.ArrayList;
 
 /**
- * Created by Daniel on 11/20/2016.
+ * Created by Daniel on 11/25/2016.
  */
-public class UserDeposit extends Fragment {
+public class AdminDeposit extends Fragment {
 
     // declarations
     Context context;
     SessionManager sessionManager;
 
-    // textViews -> deposit form
-    TextView textViewAccountNo;
-
     // editTexts -> deposit form
     EditText editTextDepositAmount;
+    EditText editTextAccountNo;
 
     // buttons -> deposit form
     Button btnProceedDeposit;
@@ -53,7 +48,7 @@ public class UserDeposit extends Fragment {
     // arrayList -> arrayList of EditTexts
     ArrayList<EditText> editTextList = new ArrayList<EditText>();
 
-    public UserDeposit(Context context) {
+    public AdminDeposit(Context context) {
 
         this.context = context;
 
@@ -62,26 +57,18 @@ public class UserDeposit extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        View view = inflater.inflate(R.layout.activity_user_frag_deposit, container, false);
+        View view = inflater.inflate(R.layout.activity_admin_frag_deposit, container, false);
 
         // new instances of sessionManager
         sessionManager = new SessionManager();
 
-        // assign editText to variable
+        // assign editTexts to variable
         editTextDepositAmount = (EditText) view.findViewById(R.id.textDepositAmount);
-
-        // assign textViews to variables
-        textViewAccountNo = (TextView) view.findViewById(R.id.textDepositAccountNo);
+        editTextAccountNo = (EditText) view.findViewById(R.id.textDepositAccountNo);
 
         // assign buttons to variables
         btnProceedDeposit = (Button) view.findViewById(R.id.btnDepositProceed);
         btnCancelDeposit = (Button) view.findViewById(R.id.btnDepositCancel);
-
-        // concatenate strings
-        String strAccountNo = "Account No: " + sessionManager.getPreferences(context, "UserAccountNo");
-
-        // set values of textViews
-        textViewAccountNo.setText(strAccountNo);
 
         // btnProceedDeposit -> onClickListener
         btnProceedDeposit.setOnClickListener(new View.OnClickListener() {
@@ -102,15 +89,15 @@ public class UserDeposit extends Fragment {
             @Override
             public void onClick(View v) {
 
-                // method call -> onClickProceedDeposit
+                // method call -> onClickCancelDeposit
                 onClickCancelDeposit();
 
             }// end onClick
 
         });// end Listener
 
-        // linearLayout -> sign-up layout
-        LinearLayout linearRoot = (LinearLayout) view.findViewById(R.id.linearUserDeposit);
+        // linearLayout -> withdraw layout
+        LinearLayout linearRoot = (LinearLayout) view.findViewById(R.id.linearAdminDeposit);
 
         // for loop -> check for instances of editTexts
         for(int i = 0; i < linearRoot.getChildCount(); i++) {
@@ -127,16 +114,6 @@ public class UserDeposit extends Fragment {
         return view;
 
     }// end onCreateView
-
-    @Override
-    public void onResume() {
-
-        super.onResume();
-
-        // Set title
-        ((UserNavigation) getActivity()).setActionBarTitle(getString(R.string.deposit));
-
-    }// end method onResume
 
     public void onClickProceedDeposit() {
 
@@ -191,7 +168,17 @@ public class UserDeposit extends Fragment {
 
                             if (strPinCode.equals(SecurityManager.decryptIt(sessionManager.getPreferences(context, "UserPinCode")))) {
 
-                                if (isNegative()) {
+                                // initialize necessary variables for validations and transactions
+                                Double dblDepositAmount = Double.parseDouble(editTextDepositAmount.getText().toString());
+                                String strAccountNo = editTextAccountNo.getText().toString().trim();
+                                int intBankAccountID = getBankAccountID(strAccountNo);
+
+                                if (intBankAccountID == 0) {
+
+                                    // toast -> non-existent account no.
+                                    Toast.makeText(context, "Account no. doesn't exist!", Toast.LENGTH_SHORT).show();
+
+                                } else if (isNegative()) {
 
                                     // toast -> negative input
                                     Toast.makeText(context, "Enter a positive integer!", Toast.LENGTH_SHORT).show();
@@ -199,16 +186,16 @@ public class UserDeposit extends Fragment {
                                 } else {
 
                                     // proceed with deposit
-                                    depositAmount();
+                                    depositAmount(intBankAccountID);
 
                                     // toast -> successfully deposited
-                                    Toast.makeText(context, "Successfully deposited to your account!", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(context, "Successfully deposited to the account!", Toast.LENGTH_SHORT).show();
 
                                     // start activity -> UserNavigation
                                     Intent intentMain = new Intent(context, MainActivity.class);
                                     startActivity(intentMain);
 
-                                }// end amount validations
+                                }// end amount validation
 
                             } else {
 
@@ -234,6 +221,7 @@ public class UserDeposit extends Fragment {
                     .show();
 
         }// end empty field validation
+
 
     }// end method onClickProceedDeposit
 
@@ -271,7 +259,41 @@ public class UserDeposit extends Fragment {
 
     }// end method onClickCancelDeposit
 
-    public Double getCurrentBalance() {
+    public int getBankAccountID(String strAccountNo) {
+
+        // declarations
+        int intBankAccountID = 0;
+
+        // fetch record from user account with matching pin as entered
+        DatabaseHelper dbHelper = new DatabaseHelper(context);
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        Cursor c = db.rawQuery("SELECT b.intBankAccountID " +
+                "FROM BankAccount b\n" +
+                "JOIN PersonBankAccount pb\n" +
+                "ON b.intBankAccountID = \n" +
+                "pb.intPBABankAccountID\n" +
+                "WHERE pb.strPBAID = '" + strAccountNo + "'" , null);
+
+        if (c.moveToFirst()) {
+
+            do {
+
+                // set personBankAccountID to strAccountID
+                intBankAccountID = c.getInt(0);
+
+            } while (c.moveToNext());
+
+        }// end if
+
+        c.close();
+        db.close();
+
+        // return strAccountID
+        return intBankAccountID;
+
+    }// end method getBankAccountID
+
+    public Double getCurrentBalance(int intBankAccountID) {
 
         // declaration
         Double dblCurrentBalance = null;
@@ -281,7 +303,7 @@ public class UserDeposit extends Fragment {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         Cursor c = db.rawQuery("SELECT b.dblBankAccountBalance \n" +
                 "FROM BankAccount b\n" +
-                "WHERE b.intBankAccountID = '" + sessionManager.getPreferences(context, "UserID") + "'" , null);
+                "WHERE b.intBankAccountID = '" + intBankAccountID + "'" , null);
 
         if (c.moveToFirst()) {
 
@@ -302,29 +324,20 @@ public class UserDeposit extends Fragment {
 
     }// end method getCurrentBalance
 
-    public void depositAmount() {
+    public void depositAmount(int intBankAccountID) {
 
         Double dblDepositAmount = Double.parseDouble(editTextDepositAmount.getText().toString());
 
         // content values -> bank account
         ContentValues cvDeposit = new ContentValues();
-        cvDeposit.put(BankAccount.KEY_BANKACCOUNT_BAL, dblDepositAmount + getCurrentBalance());
+        cvDeposit.put(BankAccount.KEY_BANKACCOUNT_BAL, getCurrentBalance(intBankAccountID) + dblDepositAmount);
 
         // DatabaseHelper -> update
         DatabaseHelper dbHelper = new DatabaseHelper(context);
         dbHelper.update(BankAccount.TABLE,
-                        cvDeposit,
-                        BankAccount.KEY_BANKACCOUNT_ID + "= ?",
-                        new String[]{String.valueOf(sessionManager.getPreferences(context, "UserID"))});
-
-        // content values -> activity log
-        ContentValues cvActivityLog = new ContentValues();
-        cvActivityLog.put(ActivityLog.KEY_LOG_PERSON_ID, sessionManager.getPreferences(context, "UserID"));
-        cvActivityLog.put(ActivityLog.KEY_LOG_PROCEDURE,
-                ActivityLog.PROCEDRE_DEPOSIT + " Php " + editTextDepositAmount.getText().toString());
-
-        // DatabaseHelper -> insert
-        dbHelper.insert(ActivityLog.TABLE, cvActivityLog);
+                cvDeposit,
+                BankAccount.KEY_BANKACCOUNT_ID + "= ?",
+                new String[]{String.valueOf(intBankAccountID)});
 
     }// end method depositAmount
 
@@ -355,13 +368,13 @@ public class UserDeposit extends Fragment {
 
     public boolean isInvalidAmount() {
 
-        boolean boolIsNotValid = true;
+        boolean boolIsNotMinimum = true;
 
         // validate current editText if contains valid deposit amounts
-        boolIsNotValid = Validation.validateAmount(editTextDepositAmount);
+        boolIsNotMinimum = Validation.validateAmount(editTextDepositAmount);
 
-        return boolIsNotValid;
+        return boolIsNotMinimum;
 
     }// end method isInvalidAmount
 
-}// end class UserDeposit
+}// end class AdminDeposit

@@ -21,12 +21,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.daniel.bankingapp.Database.DatabaseHelper;
+import com.example.daniel.bankingapp.Database.Tables.ActivityLog;
 import com.example.daniel.bankingapp.Database.Tables.BankAccount;
 import com.example.daniel.bankingapp.Main.MainActivity;
 import com.example.daniel.bankingapp.Navigation.UserNavigation;
 import com.example.daniel.bankingapp.R;
-import com.example.daniel.bankingapp.Utility.SessionManager;
-import com.example.daniel.bankingapp.Utility.Validation;
+import com.example.daniel.bankingapp.Utility.*;
+import com.example.daniel.bankingapp.Utility.SecurityManager;
+
+import java.util.ArrayList;
 
 /**
  * Created by Daniel on 11/20/2016.
@@ -47,6 +50,9 @@ public class UserWithdraw extends Fragment {
     Button btnProceedWithdraw;
     Button btnCancelWithdraw;
 
+    // arrayList -> arrayList of EditTexts
+    ArrayList<EditText> editTextList = new ArrayList<EditText>();
+
     public UserWithdraw(Context context) {
 
         this.context = context;
@@ -61,19 +67,21 @@ public class UserWithdraw extends Fragment {
         // new instances of sessionManager
         sessionManager = new SessionManager();
 
-        // retrieve and set account no. to corresponding textView
-            // assign textViews to variables
-            textViewAccountNo = (TextView) view.findViewById(R.id.textWithdrawAccountNo);
-            // concatenate strings
-            String strAccountNo = "Account No: " + sessionManager.getPreferences(context, "UserAccountNo");
-            // set values of textViews
-            textViewAccountNo.setText(strAccountNo);
-        // end
+        // assign editText to variable
+        editTextWithdrawAmount = (EditText) view.findViewById(R.id.textWithdrawAmount);
 
-        // declare onClick listeners for buttons
+        // assign textViews to variables
+        textViewAccountNo = (TextView) view.findViewById(R.id.textWithdrawAccountNo);
+
         // assign buttons to variables
         btnProceedWithdraw = (Button) view.findViewById(R.id.btnWithdrawProceed);
         btnCancelWithdraw = (Button) view.findViewById(R.id.btnWithdrawCancel);
+
+        // concatenate strings
+        String strAccountNo = "Account No: " + sessionManager.getPreferences(context, "UserAccountNo");
+
+        // set values of textViews
+        textViewAccountNo.setText(strAccountNo);
 
         // btnProceedWithdraw -> onClickListener
         btnProceedWithdraw.setOnClickListener(new View.OnClickListener() {
@@ -100,10 +108,20 @@ public class UserWithdraw extends Fragment {
             }// end onClick
 
         });// end Listener
-        // end buttons
 
-        // assign editText to variable
-        editTextWithdrawAmount = (EditText) view.findViewById(R.id.textWithdrawAmount);
+        // linearLayout -> withdraw layout
+        LinearLayout linearRoot = (LinearLayout) view.findViewById(R.id.linearUserWithdraw);
+
+        // for loop -> check for instances of editTexts
+        for(int i = 0; i < linearRoot.getChildCount(); i++) {
+
+            if(linearRoot.getChildAt(i) instanceof EditText) {
+
+                editTextList.add((EditText) linearRoot.getChildAt(i));
+
+            }// add instances of editTexts to arraylist
+
+        }// end for loop -> check for instances of editTexts
 
         // return inflated layout for this fragment
         return view;
@@ -122,93 +140,107 @@ public class UserWithdraw extends Fragment {
 
     public void onClickProceedWithdraw() {
 
-        // new linearLayout -> vertical
-        LinearLayout linearLayoutProceedWithdrawDialog = new LinearLayout(context);
-        linearLayoutProceedWithdrawDialog.setOrientation(LinearLayout.VERTICAL);
+        if (isEmpty()) {
 
-        // new layoutParams
-        LinearLayout.LayoutParams layoutParamsProceedWithdrawDialog = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT);
+            // toast -> empty fields
+            Toast.makeText(context, "Empty fields detected!", Toast.LENGTH_SHORT).show();
 
-        // layoutParams -> setMargins
-        layoutParamsProceedWithdrawDialog.setMargins(100, 0, 100, 0);
+        } else if (isInvalidAmount()) {
 
-        // new final editTextPinCode
-        final EditText editTextPinCode = new EditText(context);
+            // toast -> invalid amount
+            Toast.makeText(context, "Enter a valid amount!", Toast.LENGTH_SHORT).show();
 
-        // allow only numbers | password
-        editTextPinCode.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_VARIATION_PASSWORD);
+        } else {
 
-        // set maximum length
-        InputFilter[] FilterArray = new InputFilter[1];
-        FilterArray[0] = new InputFilter.LengthFilter(4);
-        editTextPinCode.setFilters(FilterArray);
+            // new linearLayout -> vertical
+            LinearLayout linearLayoutProceedWithdrawDialog = new LinearLayout(context);
+            linearLayoutProceedWithdrawDialog.setOrientation(LinearLayout.VERTICAL);
 
-        // set contents of linearLayout
-        linearLayoutProceedWithdrawDialog
-                .addView(editTextPinCode, layoutParamsProceedWithdrawDialog);
+            // new layoutParams
+            LinearLayout.LayoutParams layoutParamsProceedWithdrawDialog = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT);
 
-        new AlertDialog.Builder(context)
-                .setTitle("Verify identity")
-                .setMessage("Please enter your pin code below:")
-                .setView(linearLayoutProceedWithdrawDialog)
-                .setPositiveButton("Proceed", new DialogInterface.OnClickListener() {
+            // layoutParams -> setMargins
+            layoutParamsProceedWithdrawDialog.setMargins(100, 0, 100, 0);
 
-                    public void onClick(DialogInterface dialog, int whichButton) {
+            // new final editTextPinCode
+            final EditText editTextPinCode = new EditText(context);
 
-                        String strPinCode = editTextPinCode.getText().toString().trim();
+            // allow only numbers | password
+            editTextPinCode.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_VARIATION_PASSWORD);
 
-                        if (strPinCode.equals(sessionManager.getPreferences(context, "UserPinCode"))) {
+            // set maximum length
+            InputFilter[] FilterArray = new InputFilter[1];
+            FilterArray[0] = new InputFilter.LengthFilter(4);
+            editTextPinCode.setFilters(FilterArray);
 
-                            Double dblWithdrawAmount = Double.parseDouble(editTextWithdrawAmount.getText().toString());
+            // set contents of linearLayout
+            linearLayoutProceedWithdrawDialog
+                    .addView(editTextPinCode, layoutParamsProceedWithdrawDialog);
 
-                            if (isNegative()) {
+            new AlertDialog.Builder(context)
+                    .setTitle("Verify identity")
+                    .setMessage("Please enter your pin code below:")
+                    .setView(linearLayoutProceedWithdrawDialog)
+                    .setPositiveButton("Proceed", new DialogInterface.OnClickListener() {
 
-                                // toast -> negative input
-                                Toast.makeText(context, "Enter a positive integer!", Toast.LENGTH_SHORT).show();
+                        public void onClick(DialogInterface dialog, int whichButton) {
 
-                            } else if (dblWithdrawAmount > getCurrentBalance()) {
+                            String strPinCode = editTextPinCode.getText().toString().trim();
 
-                                // toast -> amount too large
-                                Toast.makeText(context, "Invalid amount!", Toast.LENGTH_SHORT).show();
+                            if (strPinCode.equals(SecurityManager.decryptIt(sessionManager.getPreferences(context, "UserPinCode")))) {
+
+                                Double dblWithdrawAmount = Double.parseDouble(editTextWithdrawAmount.getText().toString());
+
+                                if (isNegative()) {
+
+                                    // toast -> negative input
+                                    Toast.makeText(context, "Enter a positive integer!", Toast.LENGTH_SHORT).show();
+
+                                } else if (dblWithdrawAmount > getCurrentBalance()) {
+
+                                    // toast -> amount too large
+                                    Toast.makeText(context, "Invalid amount!", Toast.LENGTH_SHORT).show();
+
+                                } else {
+
+                                    // proceed with withdrawal
+                                    withdrawAmount();
+
+                                    // toast -> successfully withdrawn
+                                    Toast.makeText(context, "Successfully withdrawn from your account!", Toast.LENGTH_SHORT).show();
+
+                                    // start activity -> UserNavigation
+                                    Intent intentMain = new Intent(context, MainActivity.class);
+                                    startActivity(intentMain);
+
+                                }// end amount validation
 
                             } else {
 
-                                // proceed with withdrawal
-                                withdrawAmount();
+                                // toast -> empty fields
+                                Toast.makeText(context, "Invalid pin code!", Toast.LENGTH_SHORT).show();
 
-                                // toast -> successfully withdrawn
-                                Toast.makeText(context, "Successfully withdrawn from your account!", Toast.LENGTH_SHORT).show();
+                            }// end pin validation
 
-                                // start activity -> UserNavigation
-                                Intent intentMain = new Intent(context, MainActivity.class);
-                                startActivity(intentMain);
+                        }// end positive onClick
 
-                            }// end amount validation
+                    })// end set positive button
 
-                        } else {
+                    .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
 
-                            // toast -> empty fields
-                            Toast.makeText(context, "Invalid pin code!", Toast.LENGTH_SHORT).show();
+                        public void onClick(DialogInterface dialog, int whichButton) {
 
-                        }// end pin validation
+                            // do something
 
-                    }// end positive onClick
+                        }// end negative onClick
 
-                })// end set positive button
+                    })// end negative button
 
-                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    .show();
 
-                    public void onClick(DialogInterface dialog, int whichButton) {
-
-                        // do something
-
-                    }// end negative onClick
-
-                })// end negative button
-
-                .show();
+        }// end empty field validation
 
     }// end method onClickProceedWithdraw
 
@@ -292,6 +324,15 @@ public class UserWithdraw extends Fragment {
                     BankAccount.KEY_BANKACCOUNT_ID + "= ?",
                     new String[]{String.valueOf(sessionManager.getPreferences(context, "UserID"))});
 
+            // content values -> activity log
+            ContentValues cvActivityLog = new ContentValues();
+            cvActivityLog.put(ActivityLog.KEY_LOG_PERSON_ID, sessionManager.getPreferences(context, "UserID"));
+            cvActivityLog.put(ActivityLog.KEY_LOG_PROCEDURE,
+                    ActivityLog.PROCEDRE_WITHDRAW + " Php " + editTextWithdrawAmount.getText().toString());
+
+            // DatabaseHelper -> insert
+            dbHelper.insert(ActivityLog.TABLE, cvActivityLog);
+
     }// end method withdrawAmount
 
     public boolean isNegative() {
@@ -302,5 +343,32 @@ public class UserWithdraw extends Fragment {
         return boolIsNegative;
 
     }// end method isNegative
+
+    public boolean isEmpty() {
+
+        boolean boolIsEmpty = true;
+
+        // for loop -> iterate through editTexts
+        for (int intCounter = 0; intCounter < (editTextList.size()); intCounter++) {
+
+            // validate current editText if empty
+            boolIsEmpty = Validation.validateEmpty(editTextList.get(intCounter));
+
+        }// end for loop -> iterate through editTexts
+
+        return boolIsEmpty;
+
+    }// end method isEmpty
+
+    public boolean isInvalidAmount() {
+
+        boolean boolIsNotMinimum = true;
+
+        // validate current editText if contains valid withdraw amounts
+        boolIsNotMinimum = Validation.validateAmount(editTextWithdrawAmount);
+
+        return boolIsNotMinimum;
+
+    }// end method isInvalidAmount
 
 }// end class UserWithdraw

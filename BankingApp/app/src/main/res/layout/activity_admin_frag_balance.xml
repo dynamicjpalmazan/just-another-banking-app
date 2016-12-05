@@ -14,7 +14,7 @@
         android:textStyle="bold"
         android:textSize="26sp"
         android:gravity="center"
-        android:text="DEPOSIT"
+        android:text="CHECK BALANCE"
         android:layout_gravity="right|top"/>
 
     <ScrollView android:layout_width="fill_parent"
@@ -27,34 +27,15 @@
             android:weightSum="1"
             android:layout_marginTop="10dp"
             android:padding="15dp"
-            android:id="@+id/linearUserDeposit">
+            android:id="@+id/linearAdminBalance">
 
             <!-- account information -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginTop="6dp"
-                android:text="Account Information:"
-                android:textSize="21sp"
-                android:layout_marginLeft="10dp"/>
-
-            <TextView
-                android:color="#fff"
-                android:paddingLeft="40dp"
-                android:paddingRight="10dp"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:hint="Account No."
-                android:textSize="@dimen/text_detail_title_text_size"
-                android:id="@+id/textDepositAccountNo"/>
-            <!-- end account information -->
-
-            <!-- deposit information -->
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginTop="74dp"
-                android:text="Enter the amount to be deposited below:"
+                android:layout_marginBottom="10dp"
+                android:text="Enter the account number of the user you'd like to view the balance of, below:"
                 android:textSize="21sp"
                 android:layout_marginLeft="10dp"/>
 
@@ -62,21 +43,21 @@
                 android:color="#fff"
                 android:paddingLeft="40dp"
                 android:paddingRight="10dp"
+                android:layout_marginBottom="5dp"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:hint="Desired Amount"
-                android:textSize="@dimen/text_detail_title_text_size"
-                android:lines="1"
-                android:singleLine="true"
+                android:hint="Account No."
                 android:inputType="number"
-                android:id="@+id/textDepositAmount"/>
-            <!-- end deposit information -->
+                android:textSize="@dimen/text_detail_title_text_size"
+                android:maxLength="9"
+                android:id="@+id/textBalanceAccountNo"/>
+            <!-- end account information -->
 
             <!-- deposit buttons -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginTop="127dp"
+                android:layout_marginTop="190dp"
                 android:layout_marginBottom="15dp">
 
                 <Button
@@ -88,7 +69,7 @@
                     android:background="@drawable/bg_button"
                     android:textSize="17sp"
                     android:textColor="@color/white"
-                    android:id="@+id/btnDepositProceed"/>
+                    android:id="@+id/btnBalanceProceed"/>
 
                 <Button
                     android:layout_width="150dp"
@@ -100,13 +81,14 @@
                     android:background="@drawable/bg_button"
                     android:textSize="17sp"
                     android:textColor="@color/white"
-                    android:id="@+id/btnDepositCancel"/>
+                    android:id="@+id/btnBalanceCancel"/>
 
             </LinearLayout>
             <!-- deposit buttons -->
 
-        </LinearLayout>
-    </ScrollView>
 
+        </LinearLayout>
+
+    </ScrollView>
 
 </LinearLayout>

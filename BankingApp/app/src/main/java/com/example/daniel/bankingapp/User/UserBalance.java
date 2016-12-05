@@ -1,5 +1,6 @@
 package com.example.daniel.bankingapp.User;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -11,9 +12,12 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.daniel.bankingapp.Database.DatabaseHelper;
+import com.example.daniel.bankingapp.Database.Tables.ActivityLog;
 import com.example.daniel.bankingapp.Navigation.UserNavigation;
 import com.example.daniel.bankingapp.R;
 import com.example.daniel.bankingapp.Utility.SessionManager;
+
+import java.text.DecimalFormat;
 
 /**
  * Created by Daniel on 11/20/2016.
@@ -29,6 +33,8 @@ public class UserBalance extends Fragment {
     // textViews -> balance form
     TextView textViewBalance;
     TextView textViewAccountNo;
+
+    DecimalFormat decFormat = new DecimalFormat("0.00");
 
     public UserBalance(Context context) {
 
@@ -49,7 +55,7 @@ public class UserBalance extends Fragment {
         textViewAccountNo = (TextView) view.findViewById(R.id.textBalanceAccountNo);
 
         // concatenate strings
-        String strBalance = "Balance: Php " + Double.toString(getCurrentBalance());
+        String strBalance = "Balance: Php " + decFormat.format((getCurrentBalance()));
         String strAccountNo = "Account No: " + sessionManager.getPreferences(context, "UserAccountNo");
 
         // set values of textViews
@@ -60,16 +66,6 @@ public class UserBalance extends Fragment {
         return view;
 
     }// end onCreateView
-
-    @Override
-    public void onResume() {
-
-        super.onResume();
-
-        // Set title
-        ((UserNavigation) getActivity()).setActionBarTitle(getString(R.string.checkBalance));
-
-    }// end method onResume
 
     public Double getCurrentBalance() {
 
@@ -96,6 +92,14 @@ public class UserBalance extends Fragment {
 
         c.close();
         db.close();
+
+        // content values -> activity log
+        ContentValues cvActivityLog = new ContentValues();
+        cvActivityLog.put(ActivityLog.KEY_LOG_PERSON_ID, sessionManager.getPreferences(context, "UserID"));
+        cvActivityLog.put(ActivityLog.KEY_LOG_PROCEDURE, ActivityLog.PROCEDRE_BALANCE);
+
+        // DatabaseHelper -> insert
+        dbHelper.insert(ActivityLog.TABLE, cvActivityLog);
 
         // return dblCurrentBalance
         return dblCurrentBalance;

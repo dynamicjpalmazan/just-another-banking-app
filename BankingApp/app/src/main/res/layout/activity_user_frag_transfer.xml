@@ -26,7 +26,8 @@
             android:orientation="vertical"
             android:weightSum="1"
             android:layout_marginTop="10dp"
-            android:padding="15dp">
+            android:padding="15dp"
+            android:id="@+id/linearUserTransfer">
 
             <!-- account information -->
             <TextView
@@ -78,6 +79,7 @@
                 android:lines="1"
                 android:singleLine="true"
                 android:inputType="number"
+                android:maxLength="9"
                 android:id="@+id/textTransferReceiverAccount"/>
 
             <EditText

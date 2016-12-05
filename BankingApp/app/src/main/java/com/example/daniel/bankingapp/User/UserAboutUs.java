@@ -21,9 +21,7 @@ public class UserAboutUs extends Fragment {
     }// end constructor
 
     @Override
-    public View onCreateView(LayoutInflater inflater,
-                             ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         // return inflated layout for this fragment
         return inflater.inflate(R.layout.activity_user_frag_about, container, false);

@@ -1,25 +1,26 @@
 package com.example.daniel.bankingapp.Main;
 
+import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.example.daniel.bankingapp.Database.DatabaseHelper;
-import com.example.daniel.bankingapp.Database.Tables.BankAccount;
+import com.example.daniel.bankingapp.Database.Tables.ActivityLog;
 import com.example.daniel.bankingapp.Database.Tables.Person;
 import com.example.daniel.bankingapp.Database.Tables.PersonBankAccount;
+import com.example.daniel.bankingapp.Main.Introduction.MainIntroduction;
 import com.example.daniel.bankingapp.Navigation.AdministratorNavigation;
 import com.example.daniel.bankingapp.Navigation.UserNavigation;
 import com.example.daniel.bankingapp.R;
-import com.example.daniel.bankingapp.Utility.SessionManager;
-import com.example.daniel.bankingapp.Utility.Validation;
+import com.example.daniel.bankingapp.Utility.*;
+import com.example.daniel.bankingapp.Utility.SecurityManager;
 
 import java.util.ArrayList;
 
@@ -44,6 +45,21 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        // check if app is run for the first time
+        Boolean isFirstRun = getSharedPreferences("PREFERENCE", MODE_PRIVATE)
+                .getBoolean("isFirstRun", true);
+
+        if (isFirstRun) {
+
+            startActivity(new Intent(MainActivity.this, MainIntroduction.class));
+
+        }
+
+        getSharedPreferences("PREFERENCE", MODE_PRIVATE).edit()
+                .putBoolean("isFirstRun", false).commit();
+
+        // end check
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_login);
@@ -85,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
 
                     editTextList.add((EditText) linearRoot.getChildAt(i));
 
-                }// add instances of editTexts to arraylist
+                }// add instances of editTexts to arrayList
 
             }// end for loop -> check for instances of editTexts
 
@@ -203,7 +219,7 @@ public class MainActivity extends AppCompatActivity {
                     "JOIN   BankAccount b\n" +
                     "\tON pb.intPBABankAccountID = b.intBankAccountID\n" +
                     "WHERE  pb.strPBAID = '" + strAccountNo + "' \n" +
-                    "\tAND b.strBankAccountPassword = '" + strPinCode + "'", null);
+                    "\tAND b.strBankAccountPassword = '" + SecurityManager.encryptIt(strPinCode) + "'", null);
 
             if (cUser.moveToFirst()) {
 
@@ -239,8 +255,19 @@ public class MainActivity extends AppCompatActivity {
         sessionManager.setPreferences(MainActivity.this, "UserFName", person.getPersonFName());
         sessionManager.setPreferences(MainActivity.this, "UserLName", person.getPersonLName());
         sessionManager.setPreferences(MainActivity.this, "UserAddress", person.getPersonAddress());
-        sessionManager.setPreferences(MainActivity.this, "UserPinCode", personBankAccount.getBankAccountPin());
+        sessionManager.setPreferences(MainActivity.this, "UserPinCode", SecurityManager.encryptIt(personBankAccount.getBankAccountPin()));
         sessionManager.setPreferences(MainActivity.this, "UserAccountNo",personBankAccount.getPersonBankAccountID());
+
+        // DatabaseHelper -> insert
+        DatabaseHelper dbHelper = new DatabaseHelper(this);
+
+        // content values -> activity log
+        ContentValues cvActivityLog = new ContentValues();
+        cvActivityLog.put(ActivityLog.KEY_LOG_PERSON_ID, Integer.toString(intReturnedUserID));
+        cvActivityLog.put(ActivityLog.KEY_LOG_PROCEDURE, ActivityLog.PROCEDRE_LOGIN);
+
+        // DatabaseHelper -> insert
+        dbHelper.insert(ActivityLog.TABLE, cvActivityLog);
 
     }// end method setUserPreferences
 

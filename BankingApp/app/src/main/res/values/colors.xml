@@ -5,8 +5,6 @@
     <color name="colorAccent">#259ec6</color>
     <color name="indicator">#255676</color>
 
-
-
     <color name="black_overlay">#66000000</color>
     <color name="pressed_color">#4d90fe</color>
     <color name="default_color">#ffffff</color>
@@ -16,7 +14,6 @@
 
     <color name="kiddo_color">#FF14917F</color>
     <color name="kiddo_navbar">#00838f</color>
-
 
     <color name="text_color_default">#00000C</color>
     <color name="text_color_inverse">#FFFFFF</color>
@@ -28,5 +25,31 @@
     <color name="color_accent">@color/md_blue_500</color>
     <color name="md_blue_500">#2196F3</color>
     <color name="transparent">#00000000</color>
+
+    <!-- dots inactive colors -->
+    <color name="dot_dark_screen1">#14a895</color>
+    <color name="dot_dark_screen2">#14a895</color>
+    <color name="dot_dark_screen3">#14a895</color>
+    <color name="dot_dark_screen4">#14a895</color>
+
+    <!-- dots active colors -->
+    <color name="dot_light_screen1">#8cf9eb</color>
+    <color name="dot_light_screen2">#8cf9eb</color>
+    <color name="dot_light_screen3">#8cf9eb</color>
+    <color name="dot_light_screen4">#8cf9eb</color>
+
+    <array name="array_dot_active">
+        <item>@color/dot_light_screen1</item>
+        <item>@color/dot_light_screen2</item>
+        <item>@color/dot_light_screen3</item>
+        <item>@color/dot_light_screen4</item>
+    </array>
+
+    <array name="array_dot_inactive">
+        <item>@color/dot_dark_screen1</item>
+        <item>@color/dot_dark_screen2</item>
+        <item>@color/dot_dark_screen3</item>
+        <item>@color/dot_dark_screen4</item>
+    </array>
 
 </resources>

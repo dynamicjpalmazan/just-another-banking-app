@@ -1,4 +1,4 @@
-package com.example.daniel.bankingapp.Administrator;
+package com.example.daniel.bankingapp.Administrator.Maintenance;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -18,15 +18,15 @@ import com.example.daniel.bankingapp.R;
 /**
  * Created by Daniel on 11/25/2016.
  */
-public class AdminTransaction extends Fragment {
+public class AdminMaintenance extends Fragment {
 
     // declarations
     public static TabLayout tabLayout;
     public static ViewPager viewPager;
-    public static int int_items = 4 ;
+    public static int int_items = 2 ;
     Context context;
 
-    public AdminTransaction(Context context) {
+    public AdminMaintenance(Context context) {
 
         this.context = context;
 
@@ -36,7 +36,7 @@ public class AdminTransaction extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        View view =  inflater.inflate(R.layout.activity_admin_frag_transaction,null); // change to admin transaction fragment
+        View view =  inflater.inflate(R.layout.activity_admin_frag_transaction_container,null); // change to admin transaction fragment
         tabLayout = (TabLayout) view.findViewById(R.id.tabs);
         viewPager = (ViewPager) view.findViewById(R.id.viewpager);
 
@@ -73,10 +73,8 @@ public class AdminTransaction extends Fragment {
 
             switch (intPosition) {
 
-                case 0 : return new AdminWithdraw(context);
-                case 1 : return new AdminDeposit(context);
-                case 2 : return new AdminDummy();
-                case 3 : return new AdminDummy();
+                case 0 : return new AdminMaintenanceList(context);
+                case 1 : return new AdminMaintenanceAddUser(context);
 
             }// end switch -> position
 
@@ -97,10 +95,8 @@ public class AdminTransaction extends Fragment {
 
             switch (intPosition) {
 
-                case 0 : return "Withdraw";
-                case 1 : return "Deposit";
-                case 2 : return "Check Balance";
-                case 3 : return "Money Transfer";
+                case 0 : return "Account Record List";
+                case 1 : return "New Record";
 
             }// end switch -> intPosition
 
@@ -116,8 +112,9 @@ public class AdminTransaction extends Fragment {
         super.onResume();
 
         // Set title
-        ((AdministratorNavigation) getActivity()).setActionBarTitle(getString(R.string.transaction));
+        ((AdministratorNavigation) getActivity()).setActionBarTitle(getString(R.string.maintenance));
 
     }// end method onResume
 
-}// end class AdminTransaction
+}// end class AdminMaintenance
+

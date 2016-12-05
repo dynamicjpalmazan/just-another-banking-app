@@ -22,11 +22,15 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.daniel.bankingapp.Administrator.AdminTransaction;
+import com.example.daniel.bankingapp.Administrator.AdminLogs;
+import com.example.daniel.bankingapp.Administrator.Maintenance.AdminMaintenance;
+import com.example.daniel.bankingapp.Administrator.Maintenance.AdminMaintenanceAddUser;
+import com.example.daniel.bankingapp.Administrator.Maintenance.AdminMaintenanceList;
+import com.example.daniel.bankingapp.Administrator.Transaction.AdminTransaction;
 import com.example.daniel.bankingapp.Main.MainActivity;
 import com.example.daniel.bankingapp.R;
-import com.example.daniel.bankingapp.User.UserBalance;
-import com.example.daniel.bankingapp.Utility.SessionManager;
+import com.example.daniel.bankingapp.Utility.*;
+import com.example.daniel.bankingapp.Utility.SecurityManager;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.common.api.GoogleApiClient;
 
@@ -54,11 +58,11 @@ public class AdministratorNavigation extends AppCompatActivity
         setSupportActionBar(toolbar);
 
         // set initial fragment
-        /*Appointment appointment = new Appointment();
+        DefaultFragment defaultFragment = new DefaultFragment();
         FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
-        ft.replace(R.id.fragment_container, appointment);
-        ft.commit();*/
+        ft.replace(R.id.fragment_container, defaultFragment);
+        ft.commit();
 
         // set listener for drawer
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -126,7 +130,12 @@ public class AdministratorNavigation extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_maintenance) {
+        if (id == R.id.nav_adduser) {
+
+            // method call -> adminAddUserDialog
+            adminAddUserDialog();
+
+        } else if (id == R.id.nav_maintenance) {
 
             // method call -> adminMaintenanceDialog
             adminMaintenanceDialog();
@@ -139,6 +148,11 @@ public class AdministratorNavigation extends AppCompatActivity
         } else if (id == R.id.nav_logs) {
 
             //replace current fragment -> AdminLogs
+            AdminLogs adminLogs = new AdminLogs(AdministratorNavigation.this);
+            FragmentManager fm = getSupportFragmentManager();
+            FragmentTransaction ft = fm.beginTransaction();
+            ft.replace(R.id.fragment_container, adminLogs);
+            ft.commit();
 
         } else if (id == R.id.nav_logout) {
 
@@ -167,6 +181,79 @@ public class AdministratorNavigation extends AppCompatActivity
         getSupportActionBar().setTitle(title);
 
     }// end method setActionBarTitle
+
+    public void adminAddUserDialog() {
+
+        // new linearLayout -> vertical
+        LinearLayout linearLayoutMaintenanceDialog = new LinearLayout(this);
+        linearLayoutMaintenanceDialog.setOrientation(LinearLayout.VERTICAL);
+
+        // new layoutParams
+        LinearLayout.LayoutParams layoutParamsMaintenanceDialog = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT);
+
+        // layoutParams -> setMargins
+        layoutParamsMaintenanceDialog.setMargins(100, 0, 100, 0);
+
+        // new final editTextPinCode
+        final EditText editTextPinCode = new EditText(this);
+
+        // allow only numbers | password
+        editTextPinCode.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_VARIATION_PASSWORD);
+
+        // set maximum length
+        InputFilter[] FilterArray = new InputFilter[1];
+        FilterArray[0] = new InputFilter.LengthFilter(4);
+        editTextPinCode.setFilters(FilterArray);
+
+        // set contents of linearLayout
+        linearLayoutMaintenanceDialog
+                .addView(editTextPinCode, layoutParamsMaintenanceDialog);
+
+        new AlertDialog.Builder(this)
+                .setTitle("Verify identity")
+                .setMessage("Please enter your pin code below:")
+                .setView(linearLayoutMaintenanceDialog)
+                .setPositiveButton("Proceed", new DialogInterface.OnClickListener() {
+
+                    public void onClick(DialogInterface dialog, int whichButton) {
+
+                        String strPinCode = editTextPinCode.getText().toString().trim();
+
+                        if (strPinCode.equals(SecurityManager.decryptIt(sessionManager.getPreferences(AdministratorNavigation.this, "UserPinCode")))) {
+
+                            //replace current fragment -> AdminMaintenanceAddUser
+                            AdminMaintenanceAddUser adminMaintenanceAddUser = new AdminMaintenanceAddUser(AdministratorNavigation.this);
+                            FragmentManager fm = getSupportFragmentManager();
+                            FragmentTransaction ft = fm.beginTransaction();
+                            ft.replace(R.id.fragment_container, adminMaintenanceAddUser);
+                            ft.commit();
+
+                        } else {
+
+                            // toast -> empty fields
+                            Toast.makeText(AdministratorNavigation.this, "Invalid pin code!", Toast.LENGTH_SHORT).show();
+
+                        }// end pin validation
+
+                    }// end positive onClick
+
+                })// end set positive button
+
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+
+                    public void onClick(DialogInterface dialog, int whichButton) {
+
+                        // do something
+
+                    }// end negative onClick
+
+                })// end negative button
+
+                .show();
+
+    }// end method adminAddUserDialog
 
     public void adminMaintenanceDialog() {
 
@@ -207,14 +294,14 @@ public class AdministratorNavigation extends AppCompatActivity
 
                         String strPinCode = editTextPinCode.getText().toString().trim();
 
-                        if (strPinCode.equals(sessionManager.getPreferences(AdministratorNavigation.this, "UserPinCode"))) {
+                        if (strPinCode.equals(SecurityManager.decryptIt(sessionManager.getPreferences(AdministratorNavigation.this, "UserPinCode")))) {
 
-                            //replace current fragment -> AdminMaintenance
-                           /* AdminTransaction adminTransaction = new AdminTransaction(AdministratorNavigation.this);
+                            //replace current fragment -> AdminMaintenanceList
+                            AdminMaintenanceList adminMaintenanceList = new AdminMaintenanceList(AdministratorNavigation.this);
                             FragmentManager fm = getSupportFragmentManager();
                             FragmentTransaction ft = fm.beginTransaction();
-                            ft.replace(R.id.fragment_container, adminTransaction);
-                            ft.commit();*/
+                            ft.replace(R.id.fragment_container, adminMaintenanceList);
+                            ft.commit();
 
                         } else {
 
@@ -280,7 +367,7 @@ public class AdministratorNavigation extends AppCompatActivity
 
                         String strPinCode = editTextPinCode.getText().toString().trim();
 
-                        if (strPinCode.equals(sessionManager.getPreferences(AdministratorNavigation.this, "UserPinCode"))) {
+                        if (strPinCode.equals(SecurityManager.decryptIt(sessionManager.getPreferences(AdministratorNavigation.this, "UserPinCode")))) {
 
                             //replace current fragment -> AdminTransaction
                             AdminTransaction adminTransaction = new AdminTransaction(AdministratorNavigation.this);
@@ -330,6 +417,7 @@ public class AdministratorNavigation extends AppCompatActivity
 
                         // start activity -> MainActivity
                         Intent intentMain = new Intent(AdministratorNavigation.this, MainActivity.class);
+                        intentMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         startActivity(intentMain);
 
                     case DialogInterface.BUTTON_NEGATIVE:

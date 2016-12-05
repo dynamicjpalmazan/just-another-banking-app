@@ -14,7 +14,7 @@
         android:textStyle="bold"
         android:textSize="26sp"
         android:gravity="center"
-        android:text="DEPOSIT"
+        android:text="ACCOUNT MAINTENANCE"
         android:layout_gravity="right|top"/>
 
     <ScrollView android:layout_width="fill_parent"
@@ -27,34 +27,15 @@
             android:weightSum="1"
             android:layout_marginTop="10dp"
             android:padding="15dp"
-            android:id="@+id/linearUserDeposit">
+            android:id="@+id/linearMaintenance">
 
-            <!-- account information -->
+            <!-- basic information -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginTop="6dp"
-                android:text="Account Information:"
-                android:textSize="21sp"
-                android:layout_marginLeft="10dp"/>
-
-            <TextView
-                android:color="#fff"
-                android:paddingLeft="40dp"
-                android:paddingRight="10dp"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:hint="Account No."
-                android:textSize="@dimen/text_detail_title_text_size"
-                android:id="@+id/textDepositAccountNo"/>
-            <!-- end account information -->
-
-            <!-- deposit information -->
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginTop="74dp"
-                android:text="Enter the amount to be deposited below:"
+                android:layout_marginBottom="5dp"
+                android:text="Basic Information:"
                 android:textSize="21sp"
                 android:layout_marginLeft="10dp"/>
 
@@ -64,31 +45,97 @@
                 android:paddingRight="10dp"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:hint="Desired Amount"
+                android:hint="First Name"
+                android:lines="1"
+                android:singleLine="true"
+                android:inputType="textAutoComplete"
+                android:textSize="@dimen/text_detail_title_text_size"
+                android:id="@+id/textMaintenanceFName"/>
+
+            <EditText
+                android:color="#fff"
+                android:paddingLeft="40dp"
+                android:paddingRight="10dp"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:hint="Last Name"
+                android:lines="1"
+                android:singleLine="true"
+                android:inputType="textAutoComplete"
+                android:textSize="@dimen/text_detail_title_text_size"
+                android:id="@+id/textMaintenanceLName"/>
+
+            <EditText
+                android:color="#fff"
+                android:paddingLeft="40dp"
+                android:paddingRight="10dp"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:hint="Address"
+                android:lines="1"
+                android:singleLine="true"
+                android:inputType="textAutoComplete"
+                android:textSize="@dimen/text_detail_title_text_size"
+                android:id="@+id/textMaintenanceAddress"/>
+            <!-- end basic information -->
+
+            <!-- account information -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="25dp"
+                android:layout_marginBottom="5dp"
+                android:text="Account Information:"
+                android:textSize="21sp"
+                android:layout_marginLeft="10dp"/>
+
+            <EditText
+                android:color="#fff"
+                android:paddingLeft="40dp"
+                android:paddingRight="10dp"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:hint="Current Pin Code"
                 android:textSize="@dimen/text_detail_title_text_size"
                 android:lines="1"
                 android:singleLine="true"
-                android:inputType="number"
-                android:id="@+id/textDepositAmount"/>
-            <!-- end deposit information -->
+                android:maxLength="4"
+                android:inputType="numberPassword"
+                android:id="@+id/textMaintenanceCurrentPassword"/>
 
-            <!-- deposit buttons -->
+            <EditText
+                android:color="#fff"
+                android:paddingLeft="40dp"
+                android:paddingRight="10dp"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:hint="New Pin Code"
+                android:textSize="@dimen/text_detail_title_text_size"
+                android:lines="1"
+                android:singleLine="true"
+                android:maxLength="4"
+                android:inputType="numberPassword"
+                android:id="@+id/textMaintenanceNewPassword"/>
+            <!-- end account information -->
+
+            <!-- maintenance buttons -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginTop="127dp"
+                android:layout_marginTop="35dp"
                 android:layout_marginBottom="15dp">
 
                 <Button
                     android:layout_width="150dp"
                     android:layout_height="40dp"
-                    android:text="PROCEED"
+                    android:text="SAVE"
                     android:layout_centerHorizontal="true"
                     android:layout_marginTop="@dimen/activity_horizontal_margin"
                     android:background="@drawable/bg_button"
                     android:textSize="17sp"
                     android:textColor="@color/white"
-                    android:id="@+id/btnDepositProceed"/>
+                    android:id="@+id/btnMaintenanceProceed"
+                    android:onClick="onClickSubmitMaintenance"/>
 
                 <Button
                     android:layout_width="150dp"
@@ -100,13 +147,14 @@
                     android:background="@drawable/bg_button"
                     android:textSize="17sp"
                     android:textColor="@color/white"
-                    android:id="@+id/btnDepositCancel"/>
+                    android:id="@+id/btnMaintenanceCancel"
+                    android:onClick="onClickCancelMaintenance"/>
 
             </LinearLayout>
-            <!-- deposit buttons -->
+            <!-- maintenance buttons -->
 
         </LinearLayout>
-    </ScrollView>
 
+    </ScrollView>
 
 </LinearLayout>

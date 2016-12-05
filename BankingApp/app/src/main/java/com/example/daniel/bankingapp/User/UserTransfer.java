@@ -21,12 +21,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.daniel.bankingapp.Database.DatabaseHelper;
+import com.example.daniel.bankingapp.Database.Tables.ActivityLog;
 import com.example.daniel.bankingapp.Database.Tables.BankAccount;
 import com.example.daniel.bankingapp.Main.MainActivity;
 import com.example.daniel.bankingapp.Navigation.UserNavigation;
 import com.example.daniel.bankingapp.R;
-import com.example.daniel.bankingapp.Utility.SessionManager;
-import com.example.daniel.bankingapp.Utility.Validation;
+import com.example.daniel.bankingapp.Utility.*;
+import com.example.daniel.bankingapp.Utility.SecurityManager;
+
+import java.text.DecimalFormat;
+import java.util.ArrayList;
 
 /**
  * Created by Daniel on 11/20/2016.
@@ -49,6 +53,11 @@ public class UserTransfer extends Fragment {
     Button btnProceedTransfer;
     Button btnCancelTransfer;
 
+    // arrayList -> arrayList of EditTexts
+    ArrayList<EditText> editTextList = new ArrayList<EditText>();
+
+    DecimalFormat decFormat = new DecimalFormat("0.00");
+
     public UserTransfer(Context context) {
 
         this.context = context;
@@ -63,124 +72,139 @@ public class UserTransfer extends Fragment {
         // new instances of sessionManager
         sessionManager = new SessionManager();
 
-        // retrieve and set account no. to corresponding textView
-            // assign textViews to variables
-            textViewAccountNo = (TextView) view.findViewById(R.id.textTransferAccountNo);
-            textViewBalance = (TextView) view.findViewById(R.id.textTransferBalance);
-            // concatenate strings
-            String strAccountNo = "Account No: " + sessionManager.getPreferences(context, "UserAccountNo");
-            // set values of textViews
-            textViewAccountNo.setText(strAccountNo);
-            textViewBalance.setText("Balance: " + Double.toString(getCurrentBalanceFrom()));
-        // end
-
-        // declare onClick listeners for buttons
-            // assign buttons to variables
-            btnProceedTransfer = (Button) view.findViewById(R.id.btnTransferProceed);
-            btnCancelTransfer = (Button) view.findViewById(R.id.btnTransferCancel);
-
-            // btnProceedTransfer -> onClickListener
-            btnProceedTransfer.setOnClickListener(new View.OnClickListener() {
-
-                @Override
-                public void onClick(View v) {
-
-                    // method call -> onClickProceedTransfer
-                    onClickProceedTransfer();
-
-                }// end onClick
-
-            });// end Listener
-
-            // btnCancelTransfer -> onClickListener
-            btnCancelTransfer.setOnClickListener(new View.OnClickListener() {
-
-                @Override
-                public void onClick(View v) {
-
-                    // method call -> onClickProceedTransfer
-                    onClickCancelTransfer();
-
-                }// end onClick
-
-            });// end Listener
-        // end buttons
-
-        // assign editText to variable
+        // assign editTexts to variables
         editTextTransferAmount = (EditText) view.findViewById(R.id.textTransferAmount);
         editTextTransferAccount = (EditText) view.findViewById(R.id.textTransferReceiverAccount);
+
+        // assign textViews to variables
+        textViewAccountNo = (TextView) view.findViewById(R.id.textTransferAccountNo);
+        textViewBalance = (TextView) view.findViewById(R.id.textTransferBalance);
+
+        // assign buttons to variables
+        btnProceedTransfer = (Button) view.findViewById(R.id.btnTransferProceed);
+        btnCancelTransfer = (Button) view.findViewById(R.id.btnTransferCancel);
+
+        // concatenate strings
+        String strAccountNo = "Account No: " + sessionManager.getPreferences(context, "UserAccountNo");
+        String strBalance = "Balance: Php " + decFormat.format(getCurrentBalance(Integer.parseInt(sessionManager.getPreferences(context, "UserID"))));
+
+        // set values of textViews
+        textViewAccountNo.setText(strAccountNo);
+        textViewBalance.setText(strBalance);
+
+        // btnProceedTransfer -> onClickListener
+        btnProceedTransfer.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+
+                // method call -> onClickProceedTransfer
+                onClickProceedTransfer();
+
+            }// end onClick
+
+        });// end Listener
+
+        // btnCancelTransfer -> onClickListener
+        btnCancelTransfer.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+
+                // method call -> onClickProceedTransfer
+                onClickCancelTransfer();
+
+            }// end onClick
+
+        });// end Listener
+
+        // linearLayout -> withdraw layout
+        LinearLayout linearRoot = (LinearLayout) view.findViewById(R.id.linearUserTransfer);
+
+        // for loop -> check for instances of editTexts
+        for(int i = 0; i < linearRoot.getChildCount(); i++) {
+
+            if(linearRoot.getChildAt(i) instanceof EditText) {
+
+                editTextList.add((EditText) linearRoot.getChildAt(i));
+
+            }// add instances of editTexts to arraylist
+
+        }// end for loop -> check for instances of editTexts
 
         // return inflated layout for this fragment
         return view;
 
     }// end onCreateView
 
-    @Override
-    public void onResume() {
-
-        super.onResume();
-
-        // Set title
-        ((UserNavigation) getActivity()).setActionBarTitle(getString(R.string.moneyTransfer));
-
-    }// end method onResume
-
     public void onClickProceedTransfer() {
 
-        // new linearLayout -> vertical
-        LinearLayout linearLayoutProceedTransferDialog = new LinearLayout(context);
-        linearLayoutProceedTransferDialog.setOrientation(LinearLayout.VERTICAL);
+        if (isEmpty()) {
 
-        // new layoutParams
-        LinearLayout.LayoutParams layoutParamsProceedTransferDialog = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT);
+            // toast -> empty fields
+            Toast.makeText(context, "Empty fields detected!", Toast.LENGTH_SHORT).show();
 
-        // layoutParams -> setMargins
-        layoutParamsProceedTransferDialog.setMargins(100, 0, 100, 0);
+        } else {
 
-        // new final editTextPinCode
-        final EditText editTextPinCode = new EditText(context);
+            // new linearLayout -> vertical
+            LinearLayout linearLayoutProceedTransferDialog = new LinearLayout(context);
+            linearLayoutProceedTransferDialog.setOrientation(LinearLayout.VERTICAL);
 
-        // allow only numbers | password
-        editTextPinCode.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_VARIATION_PASSWORD);
+            // new layoutParams
+            LinearLayout.LayoutParams layoutParamsProceedTransferDialog = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT);
 
-        // set maximum length
-        InputFilter[] FilterArray = new InputFilter[1];
-        FilterArray[0] = new InputFilter.LengthFilter(4);
-        editTextPinCode.setFilters(FilterArray);
+            // layoutParams -> setMargins
+            layoutParamsProceedTransferDialog.setMargins(100, 0, 100, 0);
 
-        // set contents of linearLayout
-        linearLayoutProceedTransferDialog
-                .addView(editTextPinCode, layoutParamsProceedTransferDialog);
+            // new final editTextPinCode
+            final EditText editTextPinCode = new EditText(context);
 
-        new AlertDialog.Builder(context)
-                .setTitle("Verify identity")
-                .setMessage("Please enter your pin code below:")
-                .setView(linearLayoutProceedTransferDialog)
-                .setPositiveButton("Proceed", new DialogInterface.OnClickListener() {
+            // allow only numbers | password
+            editTextPinCode.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_VARIATION_PASSWORD);
 
-                    public void onClick(DialogInterface dialog, int whichButton) {
+            // set maximum length
+            InputFilter[] FilterArray = new InputFilter[1];
+            FilterArray[0] = new InputFilter.LengthFilter(4);
+            editTextPinCode.setFilters(FilterArray);
 
-                        String strPinCode = editTextPinCode.getText().toString().trim();
+            // set contents of linearLayout
+            linearLayoutProceedTransferDialog
+                    .addView(editTextPinCode, layoutParamsProceedTransferDialog);
 
-                        if (strPinCode.equals(sessionManager.getPreferences(context, "UserPinCode"))) {
+            new AlertDialog.Builder(context)
+                    .setTitle("Verify identity")
+                    .setMessage("Please enter your pin code below:")
+                    .setView(linearLayoutProceedTransferDialog)
+                    .setPositiveButton("Proceed", new DialogInterface.OnClickListener() {
 
-                            if (isExisting() == null) {
+                        public void onClick(DialogInterface dialog, int whichButton) {
 
-                                // toast -> non-existent account no
-                                Toast.makeText(context, "Incorrect account number of receiver!", Toast.LENGTH_SHORT).show();
+                            // initialize necessary variables
+                            String strPinCode = editTextPinCode.getText().toString().trim();
+                            int intSenderBankAccountID = Integer.parseInt(sessionManager.getPreferences(context, "UserID"));
+                            int intReceiverBankAccountID = getBankAccountID(editTextTransferAccount.getText().toString().trim());
+                            Double dblTransferAmount = Double.parseDouble(editTextTransferAmount.getText().toString());
 
-                            } else {
+                            if (strPinCode.equals(SecurityManager.decryptIt(sessionManager.getPreferences(context, "UserPinCode")))) {
 
-                                Double dblTransferAmount = Double.parseDouble(editTextTransferAmount.getText().toString());
+                                if (intReceiverBankAccountID == 0) {
 
-                                if (isNegative()) {
+                                    // toast -> non-existent account no
+                                    Toast.makeText(context, "Account no. does not exist!", Toast.LENGTH_SHORT).show();
+
+                                } else if (isNegative()) {
 
                                     // toast -> negative input
                                     Toast.makeText(context, "Enter a positive integer!", Toast.LENGTH_SHORT).show();
 
-                                } else if (dblTransferAmount > getCurrentBalanceFrom()) {
+                                } else if (intSenderBankAccountID == intReceiverBankAccountID) {
+
+                                    // toast -> same account id
+                                    Toast.makeText(context, "Invalid account number!", Toast.LENGTH_SHORT).show();
+
+                                } else if (dblTransferAmount > getCurrentBalance(intSenderBankAccountID)) {
 
                                     // toast -> amount too large
                                     Toast.makeText(context, "Invalid amount!", Toast.LENGTH_SHORT).show();
@@ -188,41 +212,41 @@ public class UserTransfer extends Fragment {
                                 } else {
 
                                     // proceed with transfer
-                                    transferAmount();
+                                    transferAmount(intSenderBankAccountID, intReceiverBankAccountID);
 
                                     // toast -> successfully transferred
                                     Toast.makeText(context, "Successfully transferred money from your account!", Toast.LENGTH_SHORT).show();
 
-                                    // start activity -> UserNavigation
+                                    // start activity -> AdminNavigation
                                     Intent intentMain = new Intent(context, MainActivity.class);
                                     startActivity(intentMain);
 
                                 }// end amount validation
 
-                            }// end receiver account no. validation
+                            } else {
 
-                        } else {
+                                // toast -> empty fields
+                                Toast.makeText(context, "Invalid pin code!", Toast.LENGTH_SHORT).show();
 
-                            // toast -> empty fields
-                            Toast.makeText(context, "Invalid pin code!", Toast.LENGTH_SHORT).show();
+                            }// end pin validation
 
-                        }// end pin validation
+                        }// end positive onClick
 
-                    }// end positive onClick
+                    })// end set positive button
 
-                })// end set positive button
+                    .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
 
-                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int whichButton) {
 
-                    public void onClick(DialogInterface dialog, int whichButton) {
+                            // do something
 
-                        // do something
+                        }// end negative onClick
 
-                    }// end negative onClick
+                    })// end negative button
 
-                })// end negative button
+                    .show();
 
-                .show();
+        }// end empty field validation
 
     }// end method onClickProceedTransfer
 
@@ -260,45 +284,10 @@ public class UserTransfer extends Fragment {
 
     }// end method onClickCancelTransfer
 
-    public String isExisting() {
-
-        String strAccountID = null;
-        String strReceiverAccountNo = editTextTransferAccount.getText().toString().trim();
-
-        // fetch record from user account with matching pin as entered
-        DatabaseHelper dbHelper = new DatabaseHelper(context);
-        SQLiteDatabase db = dbHelper.getReadableDatabase();
-        Cursor c = db.rawQuery("SELECT pb.strPBAID, b.dblBankAccountBalance\n" +
-                "FROM PersonBankAccount pb\n" +
-                "JOIN BankAccount b\n" +
-                "ON pb.intPBABankAccountID = \n" +
-                "b.intBankAccountID\n" +
-                "WHERE pb.strPBAID = '" + strReceiverAccountNo + "'" , null);
-
-        if (c.moveToFirst()) {
-
-            do {
-
-                // set personBankAccountID to strAccountID
-                strAccountID = c.getString(0);
-
-            } while (c.moveToNext());
-
-        }// end if
-
-        c.close();
-        db.close();
-
-        // return strAccountID
-        return strAccountID;
-
-    }// end method isExisting
-
-    public int getBankAccountID() {
+    public int getBankAccountID(String strAccountNo) {
 
         // declarations
         int intBankAccountID = 0;
-        String strReceiverAccountNo = editTextTransferAccount.getText().toString().trim();
 
         // fetch record from user account with matching pin as entered
         DatabaseHelper dbHelper = new DatabaseHelper(context);
@@ -308,7 +297,7 @@ public class UserTransfer extends Fragment {
                 "JOIN PersonBankAccount pb\n" +
                 "ON b.intBankAccountID = \n" +
                 "pb.intPBABankAccountID\n" +
-                "WHERE pb.strPBAID = '" + strReceiverAccountNo + "'" , null);
+                "WHERE pb.strPBAID = '" + strAccountNo + "'" , null);
 
         if (c.moveToFirst()) {
 
@@ -329,24 +318,24 @@ public class UserTransfer extends Fragment {
 
     }// end method getBankAccountID
 
-    public Double getCurrentBalanceFrom() {
+    public Double getCurrentBalance(int intBankAccountID) {
 
         // declaration
-        Double dblCurrentBalanceFrom = null;
+        Double dblCurrentBalance = null;
 
         // fetch balance from user account with matching pin
         DatabaseHelper dbHelper = new DatabaseHelper(context);
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         Cursor c = db.rawQuery("SELECT b.dblBankAccountBalance \n" +
                 "FROM BankAccount b\n" +
-                "WHERE b.intBankAccountID = '" + sessionManager.getPreferences(context, "UserID") + "'" , null);
+                "WHERE b.intBankAccountID = '" + intBankAccountID + "'" , null);
 
         if (c.moveToFirst()) {
 
             do {
 
                 // set bankAccountBalance to dblCurrentBalanceFrom
-                dblCurrentBalanceFrom = c.getDouble(0);
+                dblCurrentBalance = c.getDouble(0);
 
             } while (c.moveToNext());
 
@@ -355,84 +344,47 @@ public class UserTransfer extends Fragment {
         c.close();
         db.close();
 
-        // return dblCurrentBalanceFrom
-        return dblCurrentBalanceFrom;
+        // return dblCurrentBalance
+        return dblCurrentBalance;
 
-    }// end method getCurrentBalanceFrom
+    }// end method getCurrentBalance
 
-    public Double getCurrentBalanceTo() {
-
-        // declaration
-        Double dblCurrentBalanceTo = null;
-        String strReceiverAccountNo = editTextTransferAccount.getText().toString().trim();
-
-        // fetch balance from user account with matching pin
-        DatabaseHelper dbHelper = new DatabaseHelper(context);
-        SQLiteDatabase db = dbHelper.getReadableDatabase();
-        Cursor c = db.rawQuery("SELECT pb.strPBAID, b.dblBankAccountBalance\n" +
-                "FROM PersonBankAccount pb\n" +
-                "JOIN BankAccount b\n" +
-                "ON pb.intPBABankAccountID = \n" +
-                "b.intBankAccountID\n" +
-                "WHERE pb.strPBAID = '" + strReceiverAccountNo + "'" , null);
-
-        if (c.moveToFirst()) {
-
-            do {
-
-                // set bankAccountBalance to dblCurrentBalanceTo
-                dblCurrentBalanceTo = c.getDouble(1);
-
-            } while (c.moveToNext());
-
-        }// end if
-
-        c.close();
-        db.close();
-
-        // return dblCurrentBalanceTo
-        return dblCurrentBalanceTo;
-
-    }// end method getCurrentBalanceTo
-
-    public void transferAmount() {
+    public void transferAmount(int intSenderBankAccountID, int intReceiverBankAccountID) {
 
         Double dblTransferAmount = Double.parseDouble(editTextTransferAmount.getText().toString());
         String strReceiverAccountNo = editTextTransferAccount.getText().toString().trim();
 
-        // get id (not acct no.) of receiver
+        // content values -> bank account -> sender
+        ContentValues cvTransferFrom = new ContentValues();
+        cvTransferFrom.put(BankAccount.KEY_BANKACCOUNT_BAL, getCurrentBalance(intSenderBankAccountID) - dblTransferAmount);
 
-        // start -> subtracting transferred amount from own account
+        // DatabaseHelper -> update
+        DatabaseHelper dbHelper = new DatabaseHelper(context);
+        dbHelper.update(BankAccount.TABLE,
+                        cvTransferFrom,
+                        BankAccount.KEY_BANKACCOUNT_ID + "= ?",
+                        new String[]{String.valueOf(sessionManager.getPreferences(context, "UserID"))});
 
-            // content values -> bank account
-            ContentValues cvTransferFrom = new ContentValues();
-            cvTransferFrom.put(BankAccount.KEY_BANKACCOUNT_BAL, getCurrentBalanceFrom() - dblTransferAmount);
+        // content values -> bank account -> receiver
+        ContentValues cvTransferTo = new ContentValues();
+        cvTransferTo.put(BankAccount.KEY_BANKACCOUNT_BAL, getCurrentBalance(intReceiverBankAccountID) + dblTransferAmount);
 
-            // DatabaseHelper -> update
-            DatabaseHelper dbHelper = new DatabaseHelper(context);
-            dbHelper.update(BankAccount.TABLE,
-                            cvTransferFrom,
-                            BankAccount.KEY_BANKACCOUNT_ID + "= ?",
-                            new String[]{String.valueOf(sessionManager.getPreferences(context, "UserID"))});
+        // DatabaseHelper -> update
+        DatabaseHelper dbHelperTo = new DatabaseHelper(context);
+        dbHelperTo.update(BankAccount.TABLE,
+                          cvTransferTo,
+                          BankAccount.KEY_BANKACCOUNT_ID + "= ?",
+                          new String[]{String.valueOf(intReceiverBankAccountID)});
 
-        // end -> subtract
+        // content values -> activity log
+        ContentValues cvActivityLog = new ContentValues();
+        cvActivityLog.put(ActivityLog.KEY_LOG_PERSON_ID, sessionManager.getPreferences(context, "UserID"));
+        cvActivityLog.put(ActivityLog.KEY_LOG_PROCEDURE,
+                ActivityLog.PROCEDRE_TRANSFER + " Php " + editTextTransferAmount.getText().toString().trim() +
+                        " to Account No. " + strReceiverAccountNo);
 
-        // start -> adding transferred amount to selected account
-
-            // content values -> bank account
-            ContentValues cvTransferTo = new ContentValues();
-            cvTransferTo.put(BankAccount.KEY_BANKACCOUNT_BAL, getCurrentBalanceTo() + dblTransferAmount);
-
-            // DatabaseHelper -> update
-            DatabaseHelper dbHelperTo = new DatabaseHelper(context);
-            dbHelperTo.update(BankAccount.TABLE,
-                            cvTransferTo,
-                            BankAccount.KEY_BANKACCOUNT_ID + "= ?",
-                            new String[]{String.valueOf(getBankAccountID())});
-
-        // start -> add transferred amount to account
-
-        // end -> add
+        // DatabaseHelper -> insert
+        dbHelper.insert(ActivityLog.TABLE, cvActivityLog);
 
     }// end method transferAmount
 
@@ -444,5 +396,21 @@ public class UserTransfer extends Fragment {
         return boolIsNegative;
 
     }// end method isNegative
+
+    public boolean isEmpty() {
+
+        boolean boolIsEmpty = true;
+
+        // for loop -> iterate through editTexts
+        for (int intCounter = 0; intCounter < (editTextList.size()); intCounter++) {
+
+            // validate current editText if empty
+            boolIsEmpty = Validation.validateEmpty(editTextList.get(intCounter));
+
+        }// end for loop -> iterate through editTexts
+
+        return boolIsEmpty;
+
+    }// end method isEmpty
 
 }// end class UserTransfer

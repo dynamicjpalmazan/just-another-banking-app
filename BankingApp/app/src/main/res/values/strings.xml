@@ -13,6 +13,8 @@
 
         <!-- admin string values -->
             <string name="transaction">Transaction</string>
+            <string name="maintenance">Maintenance</string>
+            <string name="activityLogs">Activity Log</string>
         <!-- end admin string values -->
 
         <!-- utility string values -->
@@ -20,6 +22,25 @@
             <string name="navigation_drawer_close">Close navigation drawer</string>
             <string name="action_settings">Settings</string>
         <!-- end utility string values -->
+
+        <!-- intro slider string values -->
+            <string name="next">NEXT</string>
+            <string name="skip">SKIP</string>
+            <string name="start">GOT IT</string>
+
+            <string name="slide_1_title">Welcome!</string>
+            <string name="slide_1_desc">We\'d like to thank you for downloading JABA by showing you the basics of our app.</string>
+
+            <string name="slide_2_title">Deposit</string>
+            <string name="slide_2_desc">With our app, you could easily deposit your savings into your account.</string>
+
+            <string name="slide_3_title">Withdraw</string>
+            <string name="slide_3_desc">You can also withdraw whenever you feel the need to.</string>
+
+            <string name="slide_4_title">Money Transfer</string>
+            <string name="slide_4_desc">Need to pay someone? Our app allows you to transfer money to other users, too!</string>
+    <!-- end intro slider string values -->
+
 
     <!-- end string values -->
 

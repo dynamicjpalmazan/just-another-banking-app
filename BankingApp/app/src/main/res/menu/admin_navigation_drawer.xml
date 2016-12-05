@@ -4,6 +4,10 @@
     <group android:checkableBehavior="single">
 
         <item
+            android:id="@+id/nav_adduser"
+            android:icon="@drawable/adminadduser"
+            android:title="Add User" />
+        <item
             android:id="@+id/nav_maintenance"
             android:icon="@drawable/adminmaintenance"
             android:title="Maintenance" />

@@ -28,7 +28,8 @@
             android:orientation="vertical"
             android:weightSum="1"
             android:layout_marginTop="10dp"
-            android:padding="15dp">
+            android:padding="15dp"
+            android:id="@+id/linearAdminDeposit">
 
             <!-- account information -->
             <TextView
@@ -47,6 +48,8 @@
                 android:layout_height="wrap_content"
                 android:hint="Account No."
                 android:textSize="@dimen/text_detail_title_text_size"
+                android:inputType="number"
+                android:maxLength="9"
                 android:id="@+id/textDepositAccountNo"
                 />
             <!-- end account information -->

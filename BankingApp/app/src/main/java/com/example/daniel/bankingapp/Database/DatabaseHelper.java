@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.example.daniel.bankingapp.BuildConfig;
+import com.example.daniel.bankingapp.Database.Tables.ActivityLog;
 import com.example.daniel.bankingapp.Database.Tables.BankAccount;
 import com.example.daniel.bankingapp.Database.Tables.Person;
 import com.example.daniel.bankingapp.Database.Tables.PersonBankAccount;
@@ -58,11 +59,23 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         // execute statement -> create person_bank_account table
         db.execSQL(SQLCreatePersonBankAccountTable);
 
+        // sql statement -> create activity log table
+        String SQLCreateActivityLogTable = "CREATE TABLE " + ActivityLog.TABLE + "("
+                + ActivityLog.KEY_LOG_ID + " INTEGER PRIMARY KEY AUTOINCREMENT ,"
+                + ActivityLog.KEY_LOG_PROCEDURE + " TEXT, "
+                + ActivityLog.KEY_LOG_STAMP + " TIMESTAMP DEFAULT CURRENT_TIMESTAMP,"
+                + ActivityLog.KEY_LOG_PERSON_ID + " INTEGER )";
+
+        // execute statement -> create activity log table
+        db.execSQL(SQLCreateActivityLogTable);
+
     }// end method onCreate
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 
+        // drop existing activity log table
+        db.execSQL("DROP TABLE IF EXISTS " + ActivityLog.TABLE);
         // drop existing person_bank_account table
         db.execSQL("DROP TABLE IF EXISTS " + PersonBankAccount.TABLE);
         // drop existing person table

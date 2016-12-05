@@ -58,6 +58,16 @@
         </activity>
         <!-- end admin navigation activity -->
 
+        <!-- app introduction activity -->
+        <activity android:name=".Main.Introduction.MainIntroduction"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustPan"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait">
+
+        </activity>
+        <!-- end app introduction activity -->
+
         <!-- ATTENTION: This was auto-generated to add Google Play services to your project for
              App Indexing.  See https://g.co/AppIndexing/AndroidStudio for more information. -->
 

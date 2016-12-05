@@ -1,6 +1,7 @@
 package com.example.daniel.bankingapp.Navigation;
 
 import android.app.AlertDialog;
+import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -21,6 +22,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.daniel.bankingapp.Database.DatabaseHelper;
+import com.example.daniel.bankingapp.Database.Tables.ActivityLog;
 import com.example.daniel.bankingapp.Main.MainActivity;
 import com.example.daniel.bankingapp.R;
 import com.example.daniel.bankingapp.User.UserAboutUs;
@@ -28,7 +31,8 @@ import com.example.daniel.bankingapp.User.UserBalance;
 import com.example.daniel.bankingapp.User.UserDeposit;
 import com.example.daniel.bankingapp.User.UserTransfer;
 import com.example.daniel.bankingapp.User.UserWithdraw;
-import com.example.daniel.bankingapp.Utility.SessionManager;
+import com.example.daniel.bankingapp.Utility.*;
+import com.example.daniel.bankingapp.Utility.SecurityManager;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.common.api.GoogleApiClient;
 
@@ -56,10 +60,10 @@ public class UserNavigation extends AppCompatActivity
         setSupportActionBar(toolbar);
 
         // set initial fragment
-        UserAboutUs userAbout = new UserAboutUs();
+        DefaultFragment defaultFragment = new DefaultFragment();
         FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
-        ft.replace(R.id.fragment_container, userAbout);
+        ft.replace(R.id.fragment_container, defaultFragment);
         ft.commit();
 
         // set listener for drawer
@@ -230,7 +234,7 @@ public class UserNavigation extends AppCompatActivity
 
                         String strPinCode = editTextPinCode.getText().toString().trim();
 
-                        if (strPinCode.equals(sessionManager.getPreferences(UserNavigation.this, "UserPinCode"))) {
+                        if (strPinCode.equals(SecurityManager.decryptIt(sessionManager.getPreferences(UserNavigation.this, "UserPinCode")))) {
 
                             // replace current fragment -> UserBalance
                             UserBalance userBalance = new UserBalance(UserNavigation.this);
@@ -303,7 +307,7 @@ public class UserNavigation extends AppCompatActivity
 
                         String strPinCode = editTextPinCode.getText().toString().trim();
 
-                        if (strPinCode.equals(sessionManager.getPreferences(UserNavigation.this, "UserPinCode"))) {
+                        if (strPinCode.equals(SecurityManager.decryptIt(sessionManager.getPreferences(UserNavigation.this, "UserPinCode")))) {
 
                             //replace current fragment -> UserTransfer
                             UserTransfer userTransfer = new UserTransfer(UserNavigation.this);
@@ -348,11 +352,20 @@ public class UserNavigation extends AppCompatActivity
 
                     case DialogInterface.BUTTON_POSITIVE:
 
+                        DatabaseHelper dbHelper = new DatabaseHelper(UserNavigation.this);
+                        ContentValues cvActivityLog = new ContentValues();
+                        cvActivityLog.put(ActivityLog.KEY_LOG_PERSON_ID, sessionManager.getPreferences(UserNavigation.this, "UserID"));
+                        cvActivityLog.put(ActivityLog.KEY_LOG_PROCEDURE, ActivityLog.PROCEDRE_lOGOUT);
+
+                        // DatabaseHelper -> insert
+                        dbHelper.insert(ActivityLog.TABLE, cvActivityLog);
+
                         // revert SessionStatus to default -> zero
                         sessionManager.setPreferences(UserNavigation.this, "SessionStatus", "0");
 
                         // start activity -> MainActivity
                         Intent intentMain = new Intent(UserNavigation.this, MainActivity.class);
+                        intentMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         startActivity(intentMain);
 
                     case DialogInterface.BUTTON_NEGATIVE:
